@@ -1,617 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>HASO — Hospital Appointment Optimizer</title>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HASO</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#f5f7fa;color:#111;font-size:14px}
-.page{display:none}.page.active{display:block}
-header{background:#fff;border-bottom:1px solid #e5e7eb;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99}
-header h1{font-size:17px;font-weight:700;color:#0070f3}header h1 span{color:#111}
-main{max-width:920px;margin:24px auto;padding:0 14px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:9px;padding:20px;margin-bottom:14px}
-.card h2{font-size:15px;font-weight:700;margin-bottom:13px}
-.card h3{font-size:13px;font-weight:600;margin-bottom:9px;color:#374151}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
-label{display:block;font-size:10px;font-weight:700;color:#6b7280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
-input,select,textarea{width:100%;padding:8px 11px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:13px;font-family:inherit;background:#f9fafb;color:#111}
-input:focus,select:focus,textarea:focus{outline:none;border-color:#0070f3;background:#fff}
-textarea{resize:vertical;min-height:70px}
-.btn{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
-.bl{background:#0070f3;color:#fff}.bl:hover{background:#005cc4}
-.bo{background:#fff;border:1.5px solid #e5e7eb;color:#374151}.bo:hover{border-color:#9ca3af}
-.br{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}.br:hover{background:#dc2626;color:#fff}
-.bg{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}.bg:hover{background:#16a34a;color:#fff}
-.ba{background:#fffbeb;color:#d97706;border:1px solid #fde68a}.ba:hover{background:#d97706;color:#fff}
-.sm{padding:4px 10px;font-size:12px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
-.stat{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;text-align:center}
-.stat-n{font-size:24px;font-weight:800;color:#0070f3}.stat-l{font-size:11px;color:#6b7280;margin-top:2px}
-.tw{overflow-x:auto}
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f0f0f0;margin:0;padding:14px}
+.box{background:#fff;padding:16px;border-radius:8px;max-width:820px;margin:8px auto;border:1px solid #ddd}
+h2{color:#0070f3;margin-top:0}
+input,select,textarea{width:100%;padding:7px;margin:3px 0 9px;border:1px solid #ccc;border-radius:4px;font-size:13px}
+button{padding:6px 13px;background:#0070f3;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;margin:2px}
+button:hover{opacity:.85}.r{background:#dc2626}.g{background:#16a34a}.gr{background:#6b7280;font-size:12px}
+.n{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.n button{background:#e5e7eb;color:#111}.n button.a{background:#0070f3;color:#fff}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:#f9fafb;padding:8px 11px;text-align:left;font-size:10px;font-weight:700;color:#6b7280;border-bottom:1px solid #e5e7eb;text-transform:uppercase;white-space:nowrap}
-td{padding:9px 11px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
-tr:last-child td{border-bottom:none}tr:hover td{background:#fafafa}
-.badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;display:inline-block}
-.bb{background:#eff6ff;color:#2563eb}.bg2{background:#f0fdf4;color:#16a34a}
-.br2{background:#fef2f2;color:#dc2626}.ba2{background:#fffbeb;color:#d97706}.bgy{background:#f3f4f6;color:#6b7280}
-.alert{padding:10px 14px;border-radius:7px;margin-bottom:12px;font-size:13px}
-.ai{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
-.ao{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d}
-.ae{background:#fef2f2;border:1px solid #fecaca;color:#dc2626}
-.aw2{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
-.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:9px;margin-bottom:12px}
-.dc{border:2px solid #e5e7eb;border-radius:8px;padding:12px;cursor:pointer;background:#fff}
-.dc:hover{border-color:#93c5fd}.dc.sel{border-color:#0070f3;background:#eff6ff}
-.dc-name{font-weight:700;font-size:13px;margin-bottom:2px}.dc-spec{font-size:11px;color:#6b7280}
-.dc-meta{font-size:10px;color:#9ca3af;margin-top:3px}
-.steps{display:flex;gap:5px;margin-bottom:20px}
-.step{flex:1;padding:7px 4px;text-align:center;font-size:11px;font-weight:600;border-bottom:3px solid #e5e7eb;color:#9ca3af}
-.step.active{border-color:#0070f3;color:#0070f3}.step.done{border-color:#16a34a;color:#16a34a}
-.aw{display:grid;grid-template-columns:185px 1fr;min-height:100vh}
-.sb{background:#fff;border-right:1px solid #e5e7eb;padding:14px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-logo{padding:6px 14px 12px;font-size:14px;font-weight:800;color:#0070f3;border-bottom:1px solid #e5e7eb;margin-bottom:5px}
-.nv{display:block;padding:9px 14px;font-size:13px;font-weight:500;color:#6b7280;cursor:pointer;border-left:3px solid transparent}
-.nv:hover{background:#f9fafb;color:#111}.nv.active{background:#eff6ff;color:#0070f3;border-left-color:#0070f3;font-weight:600}
-.nvg{padding:10px 14px 3px;font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px}
-.ab{background:#f5f7fa;padding:20px;overflow-y:auto}
-.panel{display:none}.panel.active{display:block}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-.topbar h2{font-size:16px;font-weight:700}
-.ok-box{background:#f0fdf4;border:2px solid #86efac;border-radius:11px;padding:24px;text-align:center}
-.ok-box .tick{font-size:40px;margin-bottom:8px}.ok-box h3{font-size:16px;font-weight:700;color:#15803d;margin-bottom:6px}
-.ok-box p{color:#374151;font-size:13px;margin-bottom:3px}
-.btns{display:flex;gap:7px;flex-wrap:wrap}
-.empty{text-align:center;padding:32px;color:#9ca3af;font-size:13px}
-.loading{text-align:center;padding:18px;color:#9ca3af;font-size:13px}
-.ut{font-size:11px;font-weight:700;padding:3px 8px;border-radius:11px}
-.u1{background:#f0fdf4;color:#16a34a}.u2{background:#fffbeb;color:#d97706}.u3{background:#fef2f2;color:#dc2626}
-.pr-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px}
-.pr-lbl{width:105px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pr-bar{flex:1;background:#f3f4f6;border-radius:3px;height:15px;overflow:hidden}
-.pr-fill{height:100%;border-radius:3px;background:#0070f3;transition:width .4s}
-.pr-val{width:32px;text-align:right;color:#6b7280;flex-shrink:0}
-.tab-row{display:flex;gap:3px;margin-bottom:14px;border-bottom:1px solid #e5e7eb}
-.tb{padding:7px 14px;font-size:13px;font-weight:500;color:#6b7280;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;margin-bottom:-1px}
-.tb.active{color:#0070f3;border-bottom-color:#0070f3;font-weight:600}
-.tc{display:none}.tc.active{display:block}
-.up{display:none;margin-top:8px;padding:10px 13px;border-radius:7px;font-size:12px}
-@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}.aw{grid-template-columns:1fr}.sb{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
+th{background:#0070f3;color:#fff;padding:7px;text-align:left}td{padding:6px 8px;border-bottom:1px solid #eee}
+tr:hover td{background:#f9f9f9}
+.m{padding:8px;border-radius:4px;margin:6px 0;font-size:13px}
+.ok{background:#d1fae5;color:#065f46}.er{background:#fee2e2;color:#991b1b}.wn{background:#fef3c7;color:#92400e}
+.bd{padding:2px 7px;border-radius:12px;font-size:11px;font-weight:bold}
+.b1{background:#dbeafe;color:#1d4ed8}.b2{background:#d1fae5;color:#065f46}.b3{background:#fef3c7;color:#92400e}.b4{background:#fee2e2;color:#991b1b}
+.h{display:none}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{font-size:12px;font-weight:bold;color:#555}
 </style>
 </head>
 <body>
+<div id="pg-public"><div class="box"><h2>🏥 HASO — Hospital Appointment System</h2>
+<div class="n"><button onclick="sw('s1')" class="a" id="nb1">1. Doctor</button><button onclick="sw('s2')" id="nb2">2. Details</button><button onclick="sw('s3')" id="nb3">3. Confirm</button><button onclick="pg('check')" class="gr">My Appointments</button><button onclick="pg('login')" class="gr">Login</button></div>
+<div id="s1"><label>Specialty: <select id="spec" onchange="loadD()" style="width:auto;display:inline-block;margin-right:8px"></select></label> <label>Date: <input type="date" id="bdate" style="width:auto;display:inline-block"/></label><div id="dl" style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0"></div><button onclick="gs(2)" id="btn2" disabled>Next →</button></div>
+<div id="s2" class="h"><div class="g2"><div><label>Full Name *</label><input id="pn" placeholder="Your name"/></div><div><label>Age *</label><input id="pa" type="number" placeholder="Age"/></div></div><div class="g2"><div><label>Phone *</label><input id="pp" placeholder="Mobile"/></div><div><label>Email</label><input id="pe" placeholder="Optional"/></div></div><label>Symptoms * — your slot is assigned automatically based on this</label><textarea id="ps" placeholder="e.g. chest pain, high fever, routine checkup..." oninput="showU()"></textarea><div id="um"></div><div class="m wn">No need to pick a time — it is auto-assigned from your symptoms.</div><button onclick="gs(1)">← Back</button><button onclick="gs(3)">Next →</button></div>
+<div id="s3" class="h"><div id="sum" class="m ok"></div><button onclick="gs(2)">← Back</button><button onclick="book()" id="cb">✓ Confirm & Book</button></div>
+</div></div>
 
-<!-- PUBLIC BOOKING -->
-<div id="pg-public" class="page active">
-  <header>
-    <h1>🏥 <span>HASO</span></h1>
-    <div class="btns">
-      <button class="btn bo sm" onclick="showPage('pg-check')">My Appointments</button>
-      <button class="btn bo sm" onclick="showPage('pg-login')">Login / Register</button>
-    </div>
-  </header>
-  <main>
-    <div class="card">
-      <div class="steps">
-        <div class="step active" id="step1">1 · Doctor</div>
-        <div class="step" id="step2">2 · Details</div>
-        <div class="step" id="step3">3 · Confirm</div>
-      </div>
+<div id="pg-check" class="h"><div class="box"><h2>📋 My Appointments</h2>
+<div style="display:flex;gap:8px"><input id="cp" placeholder="Enter your phone number" style="flex:1"/><button onclick="chk()">Search</button></div><div id="cr" style="margin-top:10px"></div><br><button onclick="pg('public')" class="gr">← Back</button>
+</div></div>
 
-      <div id="s1" class="panel active">
-        <h2>Choose a Doctor</h2>
-        <div class="g2" style="max-width:440px;margin-bottom:12px">
-          <div><label>Specialty</label><select id="spec-filter" onchange="loadDocs()"><option value="">All</option></select></div>
-          <div><label>Preferred Date</label><input type="date" id="appt-date" min=""/></div>
-        </div>
-        <div class="doc-grid" id="doc-grid"><div class="loading">Loading…</div></div>
-        <button class="btn bl" onclick="goStep(2)" id="btn-s2" disabled>Next →</button>
-      </div>
+<div id="pg-login" class="h"><div class="box" style="max-width:370px"><h2>🔐 Login</h2>
+<label>Username</label><input id="lu" autocomplete="off"/><label>Password</label><input id="lp" type="password"/>
+<button onclick="login()" style="width:100%;margin-top:4px">Sign In</button><div id="le" class="m er h"></div>
+<div class="m wn" style="font-size:12px">admin/admin123 | drpatel/doc123 | alice/pat123</div>
+<button onclick="pg('public')" class="gr" style="margin-top:6px">← Back</button>
+</div></div>
 
-      <div id="s2" class="panel">
-        <h2>Your Details</h2>
-        <div class="g2">
-          <div><label>Full Name *</label><input id="p-name" placeholder="Your full name"/></div>
-          <div><label>Age *</label><input id="p-age" type="number" min="1" max="120" placeholder="Age"/></div>
-        </div>
-        <div class="g2">
-          <div><label>Phone *</label><input id="p-phone" placeholder="Mobile number"/></div>
-          <div><label>Email</label><input id="p-email" type="email" placeholder="Optional"/></div>
-        </div>
-        <div>
-          <label>Symptoms * <span style="font-size:10px;color:#9ca3af;font-weight:400">(system auto-assigns your time slot based on this)</span></label>
-          <textarea id="p-symptoms" placeholder="e.g. chest pain, high fever, routine checkup…" oninput="previewUrg('p-symptoms','urg-prev')"></textarea>
-          <div id="urg-prev" class="up"></div>
-        </div>
-        <div class="alert ai" style="margin-top:10px;margin-bottom:12px">ℹ️ <b>No time selection needed.</b> Slot is auto-assigned by our DAA scheduling engine.</div>
-        <div class="btns">
-          <button class="btn bo" onclick="goStep(1)">← Back</button>
-          <button class="btn bl" onclick="goStep(3)">Next →</button>
-        </div>
-      </div>
+<div id="pg-admin" class="h"><div class="box"><h2>📊 Admin Dashboard</h2>
+<div class="n"><button onclick="an('aov')" class="a">Overview</button><button onclick="an('aap')">Appointments</button><button onclick="an('adc')">Doctors</button><button onclick="an('apt')">Patients</button><button onclick="an('aus')">Users</button><button onclick="an('aad')">+ Add Doctor</button><button class="r" onclick="lo()">Sign Out</button></div>
+<div id="aov"><div id="as" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div><div id="aq"></div></div>
+<div id="aap" class="h"><div style="display:flex;gap:6px;margin-bottom:8px"><input type="date" id="fd" onchange="laa()" style="width:auto"/><select id="fs" onchange="laa()" style="width:auto"><option value="">All</option><option value="booked">Booked</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><button onclick="fd.value=fs.value='';laa()" class="gr">Clear</button></div><div id="at"></div></div>
+<div id="adc" class="h"><div id="dt"></div></div>
+<div id="apt" class="h"><div id="pt"></div></div>
+<div id="aus" class="h"><div id="ut"></div></div>
+<div id="aad" class="h"><div class="g2"><div><label>Name *</label><input id="dn"/></div><div><label>Specialty</label><select id="ds"><option>Cardiology</option><option>Neurology</option><option>Orthopedics</option><option>General</option><option>Pediatrics</option><option>Dermatology</option><option>Gynecology</option><option>ENT</option><option>Psychiatry</option></select></div></div><div class="g2"><div><label>Start</label><input id="dst" type="time" value="09:00"/></div><div><label>End</label><input id="det" type="time" value="17:00"/></div></div><div class="g2"><div><label>Slot (min)</label><select id="dsl"><option value="20">20</option><option value="30" selected>30</option><option value="45">45</option><option value="60">60</option></select></div><div><label>Fee (Rs)</label><input id="df" type="number" value="300"/></div></div><button onclick="addD()">Add Doctor</button><span id="dm" style="color:green;margin-left:8px;font-size:13px"></span></div>
+</div></div>
 
-      <div id="s3" class="panel">
-        <h2>Confirm Appointment</h2>
-        <div class="alert ai" id="confirm-box"></div>
-        <div class="btns">
-          <button class="btn bo" onclick="goStep(2)">← Back</button>
-          <button class="btn bl" id="btn-confirm" onclick="confirmBooking()">✓ Confirm &amp; Book</button>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
+<div id="pg-doctor" class="h"><div class="box"><h2>👨‍⚕️ Doctor Portal</h2>
+<div class="n"><button onclick="dn('da')" class="a">My Appointments</button><button onclick="dn('dp')">My Patients</button><button class="r" onclick="lo()">Sign Out</button></div>
+<div style="display:flex;gap:6px;margin-bottom:8px"><input type="date" id="dfd" onchange="lda()" style="width:auto"/><button onclick="dfd.value='';lda()" class="gr">All</button></div>
+<div id="da"><div id="dat"></div></div><div id="dp" class="h"><div id="dpt"></div></div>
+</div></div>
 
-<!-- CHECK APPOINTMENTS -->
-<div id="pg-check" class="page">
-  <header><h1>🏥 <span>HASO</span></h1><button class="btn bo sm" onclick="showPage('pg-public')">← Book</button></header>
-  <main>
-    <div class="card">
-      <h2>My Appointments</h2>
-      <div style="display:flex;gap:8px;max-width:360px;margin-bottom:16px">
-        <input id="chk-phone" placeholder="Enter phone number" style="flex:1"/>
-        <button class="btn bl" onclick="checkAppts()">Search</button>
-      </div>
-      <div id="chk-results"></div>
-    </div>
-  </main>
-</div>
-
-<!-- LOGIN / REGISTER -->
-<div id="pg-login" class="page">
-  <header><h1>🏥 <span>HASO</span></h1><button class="btn bo sm" onclick="showPage('pg-public')">← Back</button></header>
-  <main>
-    <div class="card" style="max-width:390px;margin:36px auto">
-      <div class="tab-row">
-        <button class="tb active" onclick="stab('login-tab',this)">Sign In</button>
-        <button class="tb" onclick="stab('reg-tab',this)">Register</button>
-      </div>
-      <div id="login-tab" class="tc active">
-        <div style="margin-bottom:10px"><label>Username</label><input id="lg-u" placeholder="Enter username" autocomplete="off"/></div>
-        <div style="margin-bottom:12px"><label>Password</label><input id="lg-p" type="password" placeholder="••••••••"/></div>
-        <button class="btn bl" style="width:100%" onclick="doLogin()">Sign In</button>
-        <div id="lg-err" style="color:#dc2626;font-size:12px;margin-top:7px;text-align:center"></div>
-        <div class="alert ai" style="margin-top:12px;font-size:12px"><b>Admin:</b> admin/admin123 · <b>Doctor:</b> drpatel/doc123 · <b>Patient:</b> alice/pat123</div>
-      </div>
-      <div id="reg-tab" class="tc">
-        <div class="g2">
-          <div><label>Full Name *</label><input id="rg-name" placeholder="Name"/></div>
-          <div><label>Age</label><input id="rg-age" type="number" placeholder="Age"/></div>
-        </div>
-        <div class="g2">
-          <div><label>Username *</label><input id="rg-user" placeholder="Username"/></div>
-          <div><label>Password *</label><input id="rg-pass" type="password" placeholder="Min 6 chars"/></div>
-        </div>
-        <div class="g2">
-          <div><label>Phone *</label><input id="rg-phone" placeholder="Mobile"/></div>
-          <div><label>Email</label><input id="rg-email" type="email" placeholder="Optional"/></div>
-        </div>
-        <button class="btn bl" style="width:100%" onclick="doRegister()">Create Account</button>
-        <div id="rg-msg" style="font-size:12px;margin-top:7px;text-align:center"></div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- ADMIN DASHBOARD -->
-<div id="pg-admin" class="page">
-  <div class="aw">
-    <div class="sb">
-      <div class="sb-logo">🏥 HASO</div>
-      <div class="nvg">Main</div>
-      <div class="nv active" onclick="aN('overview',this)">📊 Overview</div>
-      <div class="nv" onclick="aN('analytics',this)">📈 Analytics</div>
-      <div class="nvg">Management</div>
-      <div class="nv" onclick="aN('appointments',this)">📋 Appointments</div>
-      <div class="nv" onclick="aN('doctors',this)">👨‍⚕️ Doctors</div>
-      <div class="nv" onclick="aN('patients',this)">🧑 Patients</div>
-      <div class="nv" onclick="aN('users',this)">👤 Users</div>
-      <div class="nv" onclick="aN('add-doctor',this)">➕ Add Doctor</div>
-      <hr style="border:none;border-top:1px solid #e5e7eb;margin:7px 0"/>
-      <div class="nv" onclick="logout()" style="color:#dc2626">⎋ Sign Out</div>
-    </div>
-    <div class="ab">
-
-      <div id="admin-overview" class="panel active">
-        <div class="topbar"><h2>Dashboard</h2><span class="badge bb">Admin</span></div>
-        <div class="stats">
-          <div class="stat"><div class="stat-n" id="ov-total">—</div><div class="stat-l">Total</div></div>
-          <div class="stat"><div class="stat-n" id="ov-today">—</div><div class="stat-l">Today</div></div>
-          <div class="stat"><div class="stat-n" id="ov-active">—</div><div class="stat-l">Active</div></div>
-          <div class="stat"><div class="stat-n" id="ov-urgent">—</div><div class="stat-l">Urgent</div></div>
-          <div class="stat"><div class="stat-n" id="ov-docs">—</div><div class="stat-l">Doctors</div></div>
-          <div class="stat"><div class="stat-n" id="ov-pats">—</div><div class="stat-l">Patients</div></div>
-        </div>
-        <div class="card"><h3>Today's Queue <small style="color:#9ca3af;font-weight:400">(sorted by priority)</small></h3><div id="today-queue" class="loading">Loading…</div></div>
-      </div>
-
-      <div id="admin-analytics" class="panel">
-        <div class="topbar"><h2>Analytics</h2></div>
-        <div class="g2">
-          <div class="card"><h3>By Specialty</h3><div id="ch-spec"></div></div>
-          <div class="card"><h3>By Urgency</h3><div id="ch-urg"></div></div>
-        </div>
-        <div class="g2">
-          <div class="card"><h3>Top Doctors</h3><div id="ch-doc"></div></div>
-          <div class="card"><h3>Priority Distribution</h3><div id="ch-prio"></div></div>
-        </div>
-        <div class="card"><h3>Daily Appointments (Last 14 Days)</h3><div id="ch-daily" style="display:flex;align-items:flex-end;gap:3px;height:90px;padding-top:10px"></div></div>
-      </div>
-
-      <div id="admin-appointments" class="panel">
-        <div class="topbar">
-          <h2>All Appointments</h2>
-          <div class="btns">
-            <input type="date" id="filter-date" onchange="loadAAppts()" style="padding:6px 10px;width:auto"/>
-            <select id="filter-status" onchange="loadAAppts()" style="padding:6px 10px;width:auto"><option value="">All Status</option><option value="booked">Booked</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
-            <button class="btn bo sm" onclick="clearF()">Clear</button>
-          </div>
-        </div>
-        <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Patient</th><th>Phone</th><th>Doctor</th><th>Symptoms</th><th>Date</th><th>Time</th><th>Urgency</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody id="a-tbody"></tbody></table></div></div>
-      </div>
-
-      <div id="admin-doctors" class="panel">
-        <div class="topbar"><h2>Manage Doctors</h2></div>
-        <div class="card"><div class="tw"><table><thead><tr><th>Name</th><th>Specialty</th><th>Hours</th><th>Slot</th><th>Exp</th><th>Fee</th><th>Status</th><th></th></tr></thead><tbody id="d-tbody"></tbody></table></div></div>
-      </div>
-
-      <div id="admin-patients" class="panel">
-        <div class="topbar"><h2>Patients</h2><span class="badge bb" id="pat-count">—</span></div>
-        <div class="card"><div class="tw"><table><thead><tr><th>Name</th><th>Age</th><th>Phone</th><th>Blood</th><th>History</th><th>Status</th><th></th></tr></thead><tbody id="p-tbody"></tbody></table></div></div>
-      </div>
-
-      <div id="admin-users" class="panel">
-        <div class="topbar"><h2>User Accounts &amp; Roles</h2></div>
-        <div class="card"><div class="tw"><table><thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Role</th><th>Phone</th><th>Status</th><th></th></tr></thead><tbody id="u-tbody"></tbody></table></div></div>
-      </div>
-
-      <div id="admin-add-doctor" class="panel">
-        <div class="topbar"><h2>Add New Doctor</h2></div>
-        <div class="card" style="max-width:520px">
-          <div class="g2"><div><label>Name *</label><input id="d-name" placeholder="Dr. Full Name"/></div><div><label>Specialization *</label><select id="d-spec"><option>Cardiology</option><option>Neurology</option><option>Orthopedics</option><option>General</option><option>Pediatrics</option><option>Dermatology</option><option>Gynecology</option><option>Ophthalmology</option><option>ENT</option><option>Psychiatry</option></select></div></div>
-          <div class="g3"><div><label>Start</label><input id="d-start" type="time" value="09:00"/></div><div><label>End</label><input id="d-end" type="time" value="17:00"/></div><div><label>Slot (min)</label><select id="d-dur"><option value="20">20</option><option value="30" selected>30</option><option value="45">45</option><option value="60">60</option></select></div></div>
-          <div class="g2"><div><label>Experience (yrs)</label><input id="d-exp" type="number" value="5"/></div><div><label>Fee (₹)</label><input id="d-fee" type="number" value="300"/></div></div>
-          <div class="btns"><button class="btn bl" onclick="addDoc()">Add Doctor</button><span id="d-msg" style="font-size:12px;color:#16a34a;font-weight:600;align-self:center"></span></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- DOCTOR PORTAL -->
-<div id="pg-doctor" class="page">
-  <div class="aw">
-    <div class="sb">
-      <div class="sb-logo">🏥 HASO</div>
-      <div class="nv active" onclick="dN('appts',this)">📋 My Appointments</div>
-      <div class="nv" onclick="dN('patients',this)">🧑 My Patients</div>
-      <div class="nv" onclick="dN('profile',this)">👤 My Profile</div>
-      <hr style="border:none;border-top:1px solid #e5e7eb;margin:7px 0"/>
-      <div class="nv" onclick="logout()" style="color:#dc2626">⎋ Sign Out</div>
-    </div>
-    <div class="ab">
-      <div id="doctor-appts" class="panel active">
-        <div class="topbar"><h2>My Appointments</h2><div class="btns"><input type="date" id="df-date" onchange="loadDAppts()" style="padding:6px 10px;width:auto"/><button class="btn bo sm" onclick="document.getElementById('df-date').value='';loadDAppts()">All</button></div></div>
-        <div class="stats"><div class="stat"><div class="stat-n" id="d-tot">—</div><div class="stat-l">Total</div></div><div class="stat"><div class="stat-n" id="d-today">—</div><div class="stat-l">Today</div></div><div class="stat"><div class="stat-n" id="d-booked">—</div><div class="stat-l">Booked</div></div></div>
-        <div class="card"><div class="tw"><table><thead><tr><th>Patient</th><th>Phone</th><th>Symptoms</th><th>Date</th><th>Time</th><th>Urgency</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody id="da-tbody"></tbody></table></div></div>
-      </div>
-      <div id="doctor-patients" class="panel">
-        <div class="topbar"><h2>My Patients</h2></div>
-        <div class="card"><div class="tw"><table><thead><tr><th>Patient</th><th>Phone</th><th>Symptoms</th><th>Date</th><th>Urgency</th><th>Status</th></tr></thead><tbody id="dp-tbody"></tbody></table></div></div>
-      </div>
-      <div id="doctor-profile" class="panel">
-        <div class="topbar"><h2>My Profile</h2></div>
-        <div class="card" style="max-width:400px" id="doc-profile-card"><div class="loading">Loading…</div></div>
-        <div class="card" style="max-width:400px">
-          <h3>Change Password</h3>
-          <div style="margin-bottom:8px"><label>Old Password</label><input id="cp-old" type="password"/></div>
-          <div style="margin-bottom:10px"><label>New Password</label><input id="cp-new" type="password"/></div>
-          <div class="btns"><button class="btn bl sm" onclick="changePass()">Update</button><span id="cp-msg" style="font-size:12px;color:#16a34a;font-weight:600;align-self:center"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- PATIENT PORTAL -->
-<div id="pg-patient" class="page">
-  <div class="aw">
-    <div class="sb">
-      <div class="sb-logo">🏥 HASO</div>
-      <div class="nv active" onclick="pN('appts',this)">📋 My Appointments</div>
-      <div class="nv" onclick="pN('book',this)">➕ Book Appointment</div>
-      <div class="nv" onclick="pN('profile',this)">👤 My Profile</div>
-      <hr style="border:none;border-top:1px solid #e5e7eb;margin:7px 0"/>
-      <div class="nv" onclick="logout()" style="color:#dc2626">⎋ Sign Out</div>
-    </div>
-    <div class="ab">
-      <div id="patient-appts" class="panel active">
-        <div class="topbar"><h2>My Appointments</h2></div>
-        <div class="card"><div class="tw"><table><thead><tr><th>Doctor</th><th>Specialty</th><th>Date</th><th>Time</th><th>Urgency</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody id="pa-tbody"></tbody></table></div></div>
-      </div>
-      <div id="patient-book" class="panel">
-        <div class="topbar"><h2>Book Appointment</h2></div>
-        <div class="card">
-          <div class="g2"><div><label>Specialty</label><select id="pb-spec" onchange="loadPDocs()"><option value="">All</option></select></div><div><label>Date *</label><input type="date" id="pb-date" min=""/></div></div>
-          <div style="margin-bottom:10px"><label>Choose Doctor</label><div class="doc-grid" id="pb-doc-grid"><div class="loading">Loading…</div></div></div>
-          <div>
-            <label>Symptoms * <small style="color:#9ca3af;font-weight:400">(determines your time slot)</small></label>
-            <textarea id="pb-syms" placeholder="Describe your symptoms…" oninput="previewUrg('pb-syms','pb-prev')"></textarea>
-            <div id="pb-prev" class="up"></div>
-          </div>
-          <div class="alert ai" style="margin-top:10px;margin-bottom:12px">ℹ️ Time auto-assigned by DAA engine based on your symptoms.</div>
-          <button class="btn bl" onclick="patBook()">Book Appointment</button>
-          <div id="pb-result" style="margin-top:12px"></div>
-        </div>
-      </div>
-      <div id="patient-profile" class="panel">
-        <div class="topbar"><h2>My Profile</h2></div>
-        <div class="card" style="max-width:420px">
-          <div id="pat-profile-data"><div class="loading">Loading…</div></div>
-          <hr style="border:none;border-top:1px solid #e5e7eb;margin:14px 0"/>
-          <h3>Update Profile</h3>
-          <div class="g2" style="margin-top:8px"><div><label>Phone</label><input id="up-phone"/></div><div><label>Blood Group</label><select id="up-blood"><option></option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div></div>
-          <div style="margin-bottom:10px"><label>Medical History</label><textarea id="up-hist" style="min-height:55px" placeholder="Known conditions, allergies…"></textarea></div>
-          <div class="btns"><button class="btn bl sm" onclick="updatePProfile()">Save</button><span id="up-msg" style="font-size:12px;color:#16a34a;font-weight:600;align-self:center"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="pg-patient" class="h"><div class="box"><h2>🧑 Patient Portal</h2>
+<div class="n"><button onclick="pn('pa')" class="a">My Appointments</button><button onclick="pn('pb')">Book Appointment</button><button class="r" onclick="lo()">Sign Out</button></div>
+<div id="pa"><div id="pat"></div></div>
+<div id="pb" class="h"><div class="g2"><div><label>Specialty</label><select id="pbs" onchange="lpd()"></select></div><div><label>Date</label><input type="date" id="pbd"/></div></div><div id="pbd2" style="display:flex;flex-wrap:wrap;gap:7px;margin:8px 0"></div><label>Symptoms * (time assigned from this)</label><textarea id="pbsy" placeholder="Describe your symptoms..."></textarea><div class="m wn">Time is auto-assigned — no need to pick.</div><button onclick="pb()">Book Appointment</button><div id="pbr" style="margin-top:8px"></div></div>
+</div></div>
 
 <script>
-// ── State ───────────────────────────────────────────────
-let TOKEN=localStorage.getItem('haso_tok')||null;
-let USER=JSON.parse(localStorage.getItem('haso_user')||'null');
-let BOOK={doctor:null,date:null},PBDOC=null,PDOCS=[];
+const A='/api';let T=localStorage.getItem('tok'),U=JSON.parse(localStorage.getItem('usr')||'null'),BD=null,PD=null,PDS=[];
+async function R(p,o={}){const r=await fetch(A+p,{headers:{'Content-Type':'application/json',...(T?{Authorization:'Bearer '+T}:{})}, ...o});const d=await r.json();if(!r.ok)throw d;return d}
+function pg(p){document.querySelectorAll('[id^="pg-"]').forEach(e=>e.className='h');document.getElementById('pg-'+p).className='';if(p==='public')ini();if(p==='check')cr.innerHTML=''}
+function sw(s){['s1','s2','s3'].forEach(x=>document.getElementById(x).className='h');document.getElementById(s).className='';['nb1','nb2','nb3'].forEach((b,i)=>document.getElementById(b).className=s==='s'+(i+1)?'a':'')}
+function an(s){['aov','aap','adc','apt','aus','aad'].forEach(x=>document.getElementById(x).className='h');document.getElementById(s).className='';({aov:lov,aap:laa,adc:lad,apt:lap,aus:lau})[s]?.()}
+function dn(s){['da','dp'].forEach(x=>document.getElementById(x).className='h');document.getElementById(s).className='';if(s==='dp')ldp()}
+function pn(s){['pa','pb'].forEach(x=>document.getElementById(x).className='h');document.getElementById(s).className='';if(s==='pa')lpa();if(s==='pb')ipb()}
+function sb(s){return`<span class="bd ${{booked:'b1',completed:'b2',on_leave:'b3',available:'b2',cancelled:'b4',removed:'b4',active:'b2',inactive:'b4',admin:'b4',doctor:'b1',patient:'b2'}[s]||'b3'}">${s}</span>`}
+function ut(u){u=+u||1;return`<span class="bd ${['','b2','b3','b4'][u]}">${['','Low','Med','High'][u]}</span>`}
+function td(){return new Date().toISOString().split('T')[0]}
+function tbl(h,r){return`<table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${r}</table>`}
+function done(id,btn,c){R('/admin/appointments/'+id,{method:'PUT',body:JSON.stringify({status:'completed'})}).then(()=>{btn.closest('tr').cells[c].innerHTML=sb('completed');btn.remove()})}
 
-// ── HTTP ────────────────────────────────────────────────
-async function R(path,opts={}){
-  const res=await fetch('/api'+path,{headers:{'Content-Type':'application/json',...(TOKEN?{Authorization:'Bearer '+TOKEN}:{})}, ...opts});
-  const d=await res.json(); if(!res.ok)throw d; return d;
-}
+async function ini(){bdate.min=bdate.value=td();const s=await R('/specialties').catch(()=>[]);spec.innerHTML='<option value="">All</option>';s.forEach(x=>spec.innerHTML+=`<option>${x}</option>`);loadD()}
+async function loadD(){const sp=spec.value;PDS=await R('/doctors?status=available'+(sp?'&specialty='+sp:'')).catch(()=>[]);dl.innerHTML=PDS.map(d=>`<div id="dc${d.ID}" onclick="BD=PDS.find(x=>x.ID==${d.ID});document.querySelectorAll('[id^=dc]').forEach(e=>e.style.borderColor='#ccc');this.style.borderColor='#0070f3';btn2.disabled=false" style="border:2px solid #ccc;border-radius:6px;padding:9px;cursor:pointer;min-width:155px"><b>${d.Name}</b><br><small>${d.Specialization}</small><br><small>${String(d.Start_Time).slice(0,5)}-${String(d.End_Time).slice(0,5)} | ${d.Slot_Duration}min | Rs.${d.Fee||0}</small></div>`).join('')}
+function gs(n){if(n===3){if(!pn_.value||!pp.value||!pa.value||!ps.value){alert('Fill all required fields.');return}sum.innerHTML=`Name: <b>${pn_.value}</b> (Age ${pa.value}) | Phone: ${pp.value}<br>Doctor: <b>${BD.Name}</b> - ${BD.Specialization}<br>Date: ${bdate.value}<br>Symptoms: ${ps.value.slice(0,80)}`}sw('s'+n)}
+async function showU(){const t=ps.value;if(t.length<10){um.innerHTML='';return}try{const r=await R('/scheduler/analyze',{method:'POST',body:JSON.stringify({symptoms:t,age:30})});um.innerHTML=`<div class="m ${r.urgency==3?'er':r.urgency==2?'wn':'ok'}">${r.urgency_label} Urgency — ${r.message}</div>`}catch{}}
+async function book(){cb.textContent='Booking...';cb.disabled=true;try{const r=await R('/book',{method:'POST',body:JSON.stringify({patient_name:pn_.value,patient_age:+pa.value,patient_phone:pp.value,patient_email:pe.value,symptoms:ps.value,doctor_id:BD.ID,appt_date:bdate.value})});document.getElementById('s3').innerHTML=`<div class="m ok"><b>✅ Confirmed!</b><br>Doctor: ${r.doctor} | Date: ${r.date} | Time: <b>${r.time}</b><br>Urgency: ${r.urgency} | Priority: ${r.priority}/10<br><small>Save your phone to check/cancel later.</small></div><button onclick="location.reload()">Book Another</button><button onclick="pg('check')" class="gr">View Appointments</button>`}catch(e){alert(e.error||'Failed');cb.textContent='✓ Confirm & Book';cb.disabled=false}}
+async function chk(){const ph=cp.value.trim();if(!ph){alert('Enter phone.');return}const rows=await R('/appointments/check?phone='+encodeURIComponent(ph)).catch(()=>[]);cr.innerHTML=!rows.length?'<div class="m wn">No appointments found.</div>':tbl(['Doctor','Specialty','Date','Time','Urgency','Status',''],rows.map(a=>`<tr><td>${a.doctor_name}</td><td>${a.specialty}</td><td>${a.appt_date}</td><td><b>${a.appt_time}</b></td><td>${ut(a.urgency)}</td><td>${sb(a.status)}</td><td>${a.status==='booked'?`<button class="r" onclick="R('/appointments/${a.id}/cancel',{method:'POST'}).then(()=>{this.closest('tr').cells[5].innerHTML=sb('cancelled');this.remove()})">Cancel</button>`:''}</td></tr>`).join(''))}
+async function login(){try{const r=await R('/auth/login',{method:'POST',body:JSON.stringify({username:lu.value.trim(),password:lp.value})});T=r.token;U=r.user;localStorage.setItem('tok',T);localStorage.setItem('usr',JSON.stringify(U));if(U.role==='admin'){pg('admin');lov()}else if(U.role==='doctor'){pg('doctor');lda()}else{pg('patient');lpa()}}catch{le.className='m er';le.textContent='Wrong credentials.'}}
+lp.addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+function lo(){T=null;U=null;localStorage.removeItem('tok');localStorage.removeItem('usr');location.reload()}
 
-// ── Util ────────────────────────────────────────────────
-function showPage(id){document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none'});const e=document.getElementById(id);e.style.display='block';e.classList.add('active')}
-function sd(id,role,panel,el){document.querySelectorAll(`#pg-${role} .panel`).forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll(`#pg-${role} .nv`).forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active')}
-function aN(p,el){sd(`admin-${p}`,  'admin',  p,el);const m={overview:loadOV,analytics:loadAnal,appointments:loadAAppts,doctors:loadADocs,patients:loadAPats,users:loadUsers};m[p]&&m[p]()}
-function dN(p,el){sd(`doctor-${p}`, 'doctor', p,el);const m={appts:loadDAppts,patients:loadDPats,profile:loadDProf};m[p]&&m[p]()}
-function pN(p,el){sd(`patient-${p}`,'patient', p,el);const m={appts:loadPAppts,book:initPBook,profile:loadPProf};m[p]&&m[p]()}
-function stab(id,btn){document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}
-function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
-function today(){return new Date().toISOString().split('T')[0]}
-function s2(v){return v?String(v).slice(0,10):''}
-function sb(s){const m={booked:'bb',completed:'bg2',cancelled:'br2',available:'bg2',on_leave:'ba2',removed:'bgy',active:'bg2',inactive:'bgy',admin:'br2',doctor:'bb',patient:'bg2'};return `<span class="badge ${m[s]||'bgy'}">${s.replace('_',' ')}</span>`}
-function ut(u){u=parseInt(u||1);return `<span class="ut ${['','u1','u2','u3'][u]}">${['','Low','Medium','High'][u]}</span>`}
-function prRow(lbl,val,max,clr='#0070f3'){const p=max?Math.round(val/max*100):0;return `<div class="pr-row"><div class="pr-lbl" title="${lbl}">${lbl}</div><div class="pr-bar"><div class="pr-fill" style="width:${p}%;background:${clr}"></div></div><div class="pr-val">${val}</div></div>`}
-function renderDocs(gid,docs,onSel){const g=document.getElementById(gid);if(!docs.length){g.innerHTML='<div class="empty">No doctors.</div>';return}g.innerHTML=docs.map(d=>`<div class="dc" id="dc-${d.ID}" onclick="(${onSel})(${d.ID})"><div class="dc-name">👨‍⚕️ ${d.Name}</div><div class="dc-spec">${d.Specialization}</div><div class="dc-meta">🕐 ${String(d.Start_Time).slice(0,5)}–${String(d.End_Time).slice(0,5)} · ${d.Slot_Duration}min · ₹${d.Fee||'—'}</div></div>`).join('')}
+async function lov(){const s=await R('/analytics/overview').catch(()=>({}));as_.innerHTML=[['Total',s.total_appointments],['Today',s.today],['Active',s.booked],['Urgent',s.high_urgency],['Doctors',s.total_doctors],['Patients',s.total_patients]].map(([l,v])=>`<div style="background:#f0f4ff;border-radius:6px;padding:10px 16px;text-align:center"><b style="font-size:22px;color:#0070f3">${v||0}</b><br><small>${l}</small></div>`).join('');const ap=await R('/admin/appointments?date='+td()).catch(()=>[]);aq.innerHTML='<b>Today Queue (by Priority)</b><br><br>'+(!ap.length?'<div class="m wn">No appointments today.</div>':tbl(['Pri','Patient','Phone','Doctor','Time','Urgency','Status',''],ap.map(a=>`<tr><td><b>${a.Priority}/10</b></td><td>${a.Patient_Name}</td><td>${a.Patient_Phone}</td><td>${a.Doctor_Name}</td><td><b>${a.Appt_Time}</b></td><td>${ut(a.Urgency)}</td><td>${sb(a.Status)}</td><td>${a.Status==='booked'?`<button class="g" onclick="done(${a.ID},this,6)">Done</button>`:''}</td></tr>`).join('')))}
+async function laa(){let u='/admin/appointments';const p=[];if(fd.value)p.push('date='+fd.value);if(fs.value)p.push('status='+fs.value);if(p.length)u+='?'+p.join('&');const rows=await R(u).catch(()=>[]);at.innerHTML=!rows.length?'<div class="m wn">No appointments.</div>':tbl(['ID','Patient','Phone','Doctor','Date','Time','Urgency','Pri','Status',''],rows.map(a=>`<tr><td>${a.ID}</td><td>${a.Patient_Name}</td><td>${a.Patient_Phone}</td><td>${a.Doctor_Name}</td><td>${a.Appt_Date}</td><td><b>${a.Appt_Time}</b></td><td>${ut(a.Urgency)}</td><td>${a.Priority}</td><td>${sb(a.Status)}</td><td style="white-space:nowrap">${a.Status==='booked'?`<button class="g" style="padding:3px 7px;font-size:11px" onclick="done(${a.ID},this,8)">Done</button>`:''}<button class="r" style="padding:3px 7px;font-size:11px" onclick="R('/admin/appointments/${a.ID}',{method:'DELETE'}).then(()=>this.closest('tr').remove())">X</button></td></tr>`).join(''))}
+async function lad(){const docs=await R('/admin/doctors').catch(()=>[]);dt.innerHTML=tbl(['Name','Specialty','Hours','Slot','Fee','Status',''],docs.map(d=>`<tr><td>${d.Name}</td><td>${d.Specialization}</td><td>${String(d.Start_Time).slice(0,5)}-${String(d.End_Time).slice(0,5)}</td><td>${d.Slot_Duration}min</td><td>Rs.${d.Fee||0}</td><td>${sb(d.Status)}</td><td style="white-space:nowrap">${d.Status==='available'?`<button class="gr" onclick="R('/admin/doctors/${d.ID}',{method:'PUT',body:JSON.stringify({Status:'on_leave'})}).then(lad)">On Leave</button>`:d.Status==='on_leave'?`<button class="g" onclick="R('/admin/doctors/${d.ID}',{method:'PUT',body:JSON.stringify({Status:'available'})}).then(lad)">Restore</button>`:''} ${d.Status!=='removed'?`<button class="r" onclick="confirm('Remove?')&&R('/admin/doctors/${d.ID}',{method:'DELETE'}).then(lad)">Remove</button>`:''}</td></tr>`).join(''))}
+async function addD(){const n=dn_.value.trim();if(!n){alert('Enter name.');return}await R('/admin/doctors',{method:'POST',body:JSON.stringify({name:n,specialization:ds.value,start_time:dst.value,end_time:det.value,slot_duration:dsl.value,fee:df.value})});dn_.value='';dm.textContent='✓ Added!';setTimeout(()=>dm.textContent='',3000)}
+async function lap(){const p=await R('/admin/patients').catch(()=>[]);pt.innerHTML=tbl(['Name','Age','Phone','Blood','History','Status'],p.map(x=>`<tr><td>${x.Name}</td><td>${x.Age||'-'}</td><td>${x.Phone}</td><td>${x.Blood_Group||'-'}</td><td style="font-size:11px">${(x.Medical_History||'None').slice(0,40)}</td><td>${sb(x.Status||'active')}</td></tr>`).join(''))}
+async function lau(){const u=await R('/admin/users').catch(()=>[]);ut_.innerHTML=tbl(['ID','Username','Name','Role','Phone','Status',''],u.map(x=>`<tr><td>${x.ID}</td><td>${x.Username}</td><td>${x.Name}</td><td>${sb(x.Role)}</td><td>${x.Phone||'-'}</td><td>${sb(x.Status)}</td><td>${x.Status==='active'?`<button class="r" onclick="R('/admin/users/${x.ID}',{method:'PUT',body:JSON.stringify({status:'inactive'})}).then(lau)">Deactivate</button>`:`<button class="g" onclick="R('/admin/users/${x.ID}',{method:'PUT',body:JSON.stringify({status:'active'})}).then(lau)">Activate</button>`}</td></tr>`).join(''))}
 
-// ── Auth ────────────────────────────────────────────────
-async function doLogin(){
-  const u=document.getElementById('lg-u').value.trim(),p=document.getElementById('lg-p').value;
-  try{const r=await R('/auth/login',{method:'POST',body:JSON.stringify({username:u,password:p})});TOKEN=r.token;USER=r.user;localStorage.setItem('haso_tok',TOKEN);localStorage.setItem('haso_user',JSON.stringify(USER));route();}
-  catch{document.getElementById('lg-err').textContent='❌ Wrong credentials.'}
-}
-document.getElementById('lg-p').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+async function lda(){const d=dfd.value;const r=await R('/doctor/appointments'+(d?'?date='+d:'')).catch(()=>[]);dat.innerHTML=!r.length?'<div class="m wn">No appointments.</div>':tbl(['Patient','Phone','Date','Time','Urgency','Pri','Status',''],r.map(a=>`<tr><td>${a.Patient_Name}</td><td>${a.Patient_Phone}</td><td>${a.Appt_Date}</td><td><b>${a.Appt_Time}</b></td><td>${ut(a.Urgency)}</td><td>${a.Priority}/10</td><td>${sb(a.Status)}</td><td>${a.Status==='booked'?`<button class="g" style="padding:3px 7px;font-size:11px" onclick="done(${a.ID},this,6)">Done</button>`:''}</td></tr>`).join(''))}
+async function ldp(){const r=await R('/doctor/appointments').catch(()=>[]);dpt.innerHTML=!r.length?'<div class="m wn">No patients.</div>':tbl(['Patient','Phone','Date','Urgency','Status'],r.map(a=>`<tr><td>${a.Patient_Name}</td><td>${a.Patient_Phone}</td><td>${a.Appt_Date}</td><td>${ut(a.Urgency)}</td><td>${sb(a.Status)}</td></tr>`).join(''))}
+async function lpa(){const r=await R('/patient/appointments').catch(()=>[]);pat.innerHTML=!r.length?'<div class="m wn">No appointments.</div>':tbl(['Doctor','Specialty','Date','Time','Urgency','Pri','Status',''],r.map(a=>`<tr><td>${a.Doctor_Name}</td><td>${a.Specialty}</td><td>${a.Appt_Date}</td><td><b>${a.Appt_Time}</b></td><td>${ut(a.Urgency)}</td><td>${a.Priority}/10</td><td>${sb(a.Status)}</td><td>${a.Status==='booked'?`<button class="r" onclick="confirm('Cancel?')&&R('/appointments/${a.ID}/cancel',{method:'POST'}).then(()=>{this.closest('tr').cells[6].innerHTML=sb('cancelled');this.remove()})">Cancel</button>`:''}</td></tr>`).join(''))}
+async function ipb(){pbd.min=pbd.value=td();const s=await R('/specialties').catch(()=>[]);pbs.innerHTML='<option value="">All</option>';s.forEach(x=>pbs.innerHTML+=`<option>${x}</option>`);lpd()}
+async function lpd(){PD=null;const docs=await R('/doctors?status=available'+(pbs.value?'&specialty='+pbs.value:'')).catch(()=>[]);pbd2.innerHTML=docs.map(d=>`<div onclick="PD=JSON.parse(this.dataset.d);pbd2.querySelectorAll('div').forEach(e=>e.style.borderColor='#ccc');this.style.borderColor='#0070f3'" data-d='${JSON.stringify(d).replace(/'/g,"&#39;")}' style="border:2px solid #ccc;border-radius:6px;padding:9px;cursor:pointer;min-width:150px"><b>${d.Name}</b><br><small>${d.Specialization}</small><br><small>Rs.${d.Fee||0}</small></div>`).join('')}
+async function pb(){if(!PD){alert('Choose a doctor.');return}const sy=pbsy.value.trim();if(!sy){alert('Describe symptoms.');return}try{const pr=await R('/patient/profile').catch(()=>null);const r=await R('/book',{method:'POST',body:JSON.stringify({patient_name:pr?.Name||U?.name||'',patient_age:pr?.Age||0,patient_phone:pr?.Phone||'',symptoms:sy,doctor_id:PD.ID,appt_date:pbd.value})});pbr.innerHTML=`<div class="m ok">✅ Booked! <b>${r.doctor}</b> — ${r.date} at <b>${r.time}</b> | Urgency: ${r.urgency} | Priority: ${r.priority}/10</div>`}catch(e){pbr.innerHTML=`<div class="m er">${e.error||'Failed'}</div>`}}
 
-async function doRegister(){
-  const name=document.getElementById('rg-name').value.trim(),user=document.getElementById('rg-user').value.trim(),pass=document.getElementById('rg-pass').value,phone=document.getElementById('rg-phone').value.trim();
-  if(!name||!user||!pass||!phone){alert('Fill required fields.');return}
-  try{await R('/auth/register',{method:'POST',body:JSON.stringify({name,username:user,password:pass,phone,email:document.getElementById('rg-email').value,age:0})});
-    const m=document.getElementById('rg-msg');m.style.color='#16a34a';m.textContent='✓ Account created! Sign in.';stab('login-tab',document.querySelector('.tb'));
-  }catch(e){const m=document.getElementById('rg-msg');m.style.color='#dc2626';m.textContent='❌ '+(e.error||'Failed')}
-}
-
-function route(){if(USER.role==='admin'){showPage('pg-admin');loadOV();}else if(USER.role==='doctor'){showPage('pg-doctor');loadDAppts();}else{showPage('pg-patient');loadPAppts();initPBook();}}
-function logout(){TOKEN=null;USER=null;localStorage.removeItem('haso_tok');localStorage.removeItem('haso_user');showPage('pg-public')}
-async function changePass(){
-  try{await R('/auth/change-password',{method:'POST',body:JSON.stringify({old_password:document.getElementById('cp-old').value,new_password:document.getElementById('cp-new').value})});
-    const m=document.getElementById('cp-msg');m.textContent='✓ Updated!';setTimeout(()=>m.textContent='',3000);['cp-old','cp-new'].forEach(i=>document.getElementById(i).value='');
-  }catch(e){alert(e.error||'Failed')}
-}
-
-// ── Public Booking ──────────────────────────────────────
-async function initPublic(){
-  document.getElementById('appt-date').min=document.getElementById('appt-date').value=today();
-  try{const s=await R('/specialties');const sel=document.getElementById('spec-filter');s.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;sel.appendChild(o)});}catch{}
-  loadDocs();
-}
-
-async function loadDocs(){
-  const sp=document.getElementById('spec-filter').value;
-  try{PDOCS=await R('/doctors?status=available'+(sp?'&specialty='+encodeURIComponent(sp):''));}catch{PDOCS=[];}
-  renderDocs('doc-grid',PDOCS,id=>{BOOK.doctor=PDOCS.find(d=>d.ID==id);document.querySelectorAll('#doc-grid .dc').forEach(c=>c.classList.remove('sel'));document.getElementById('dc-'+id).classList.add('sel');document.getElementById('btn-s2').disabled=false;});
-}
-
-function goStep(n){
-  if(n===3){if(!document.getElementById('p-name').value.trim()||!document.getElementById('p-phone').value.trim()||!document.getElementById('p-age').value.trim()||!document.getElementById('p-symptoms').value.trim()){alert('Fill all required fields.');return}buildSummary()}
-  for(let i=1;i<=3;i++){document.getElementById('s'+i).classList.toggle('active',i===n);document.getElementById('step'+i).className=i<n?'step done':i===n?'step active':'step'}
-}
-
-async function previewUrg(symId,prevId){
-  const text=document.getElementById(symId).value;
-  const el=document.getElementById(prevId);
-  if(text.length<10){el.style.display='none';return}
-  try{const r=await R('/scheduler/analyze',{method:'POST',body:JSON.stringify({symptoms:text,age:30})});
-    const c={1:'#f0fdf4;color:#16a34a;border:1px solid #bbf7d0',2:'#fffbeb;color:#92400e;border:1px solid #fde68a',3:'#fef2f2;color:#dc2626;border:1px solid #fecaca'}[r.urgency];
-    el.style.cssText=`display:block;background:${c};padding:9px 12px;border-radius:7px;font-size:12px;margin-top:7px`;
-    el.innerHTML=`<b>${r.urgency_label} Urgency</b> — ${r.message} (Priority: ${r.priority}/10)`;
-  }catch{}
-}
-
-function buildSummary(){
-  BOOK.date=document.getElementById('appt-date').value||today();
-  const s=document.getElementById('p-symptoms').value;
-  document.getElementById('confirm-box').innerHTML=`<b>Summary</b><br><br>👤 <b>${document.getElementById('p-name').value}</b> (Age ${document.getElementById('p-age').value})<br>📞 ${document.getElementById('p-phone').value}<br>👨‍⚕️ ${BOOK.doctor.Name} — ${BOOK.doctor.Specialization}<br>📅 ${BOOK.date}<br>🩺 ${s.slice(0,100)}${s.length>100?'…':''}<br><br><i style="font-size:12px">⏰ Slot auto-assigned on confirm.</i>`;
-}
-
-async function confirmBooking(){
-  const btn=document.getElementById('btn-confirm');btn.disabled=true;btn.textContent='Booking…';
-  try{const r=await R('/book',{method:'POST',body:JSON.stringify({patient_name:document.getElementById('p-name').value.trim(),patient_age:+document.getElementById('p-age').value,patient_phone:document.getElementById('p-phone').value.trim(),patient_email:document.getElementById('p-email').value.trim(),symptoms:document.getElementById('p-symptoms').value.trim(),doctor_id:BOOK.doctor.ID,appt_date:BOOK.date})});
-    document.getElementById('s3').innerHTML=`<div class="ok-box"><div class="tick">✅</div><h3>Confirmed!</h3><p><b>${r.doctor}</b> — ${r.specialty}</p><p>📅 ${r.date} &nbsp; 🕐 <b>${r.time}</b></p><p style="margin-top:5px">Urgency: ${ut(r.urgency=='High'?3:r.urgency=='Medium'?2:1)} Priority: <b>${r.priority}/10</b></p><p style="font-size:12px;color:#6b7280;margin-top:7px">Time auto-assigned by DAA algorithm.</p><div class="btns" style="margin-top:14px;justify-content:center"><button class="btn bl" onclick="resetBook()">Book Another</button><button class="btn bo" onclick="showPage('pg-check')">Check Appointments</button></div></div>`;
-  }catch(e){btn.disabled=false;btn.textContent='✓ Confirm & Book';alert(e.error||'Booking failed.')}
-}
-
-function resetBook(){
-  BOOK={doctor:null,date:null};['p-name','p-age','p-phone','p-email','p-symptoms'].forEach(i=>document.getElementById(i).value='');
-  goStep(1);document.querySelectorAll('#doc-grid .dc').forEach(c=>c.classList.remove('sel'));document.getElementById('btn-s2').disabled=true;
-  document.getElementById('s3').innerHTML=`<h2>Confirm Appointment</h2><div class="alert ai" id="confirm-box"></div><div class="btns"><button class="btn bo" onclick="goStep(2)">← Back</button><button class="btn bl" id="btn-confirm" onclick="confirmBooking()">✓ Confirm &amp; Book</button></div>`;
-}
-
-// ── Check (public) ──────────────────────────────────────
-async function checkAppts(){
-  const phone=document.getElementById('chk-phone').value.trim();if(!phone){alert('Enter phone.');return}
-  const el=document.getElementById('chk-results');el.innerHTML='<div class="loading">Searching…</div>';
-  try{const rows=await R('/appointments/check?phone='+encodeURIComponent(phone));
-    if(!rows.length){el.innerHTML='<div class="empty">No appointments found.</div>';return}
-    el.innerHTML=`<div class="tw"><table><thead><tr><th>Doctor</th><th>Specialty</th><th>Date</th><th>Time</th><th>Urgency</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody>${rows.map(a=>`<tr><td><b>${a.doctor_name}</b></td><td>${a.specialty}</td><td>${a.appt_date}</td><td style="color:#0070f3;font-weight:600">${a.appt_time}</td><td>${ut(a.urgency)}</td><td><span class="badge ${a.priority>=7?'br2':a.priority>=4?'ba2':'bg2'}">${a.priority}/10</span></td><td>${sb(a.status)}</td><td>${a.status==='booked'?`<button class="btn br sm" onclick="cancelA(${a.id},this)">Cancel</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
-  }catch{el.innerHTML='<div class="alert ae">Could not load. Is the server running?</div>'}
-}
-async function cancelA(id,btn){if(!confirm('Cancel?'))return;await R('/appointments/'+id+'/cancel',{method:'POST'});btn.closest('tr').querySelectorAll('.badge').forEach((b,_,a)=>{if(b===a[a.length-1])b.outerHTML=sb('cancelled')});btn.remove()}
-
-// ── Admin ───────────────────────────────────────────────
-async function loadOV(){
-  try{
-    const s=await R('/analytics/overview');
-    set('ov-total',s.total_appointments);set('ov-today',s.today);set('ov-active',s.booked);set('ov-urgent',s.high_urgency);set('ov-docs',s.total_doctors);set('ov-pats',s.total_patients);
-    const appts=await R('/admin/appointments?date='+today());
-    const el=document.getElementById('today-queue');
-    if(!appts.length){el.innerHTML='<div class="empty">No appointments today.</div>';return}
-    el.innerHTML=`<div class="tw"><table><thead><tr><th>Priority</th><th>Patient</th><th>Phone</th><th>Doctor</th><th>Time</th><th>Symptoms</th><th>Urgency</th><th>Status</th><th></th></tr></thead><tbody>${appts.map(a=>`<tr><td><span class="badge ${a.Priority>=7?'br2':a.Priority>=4?'ba2':'bg2'}">${a.Priority}/10</span></td><td><b>${a.Patient_Name}</b></td><td>${a.Patient_Phone}</td><td>${a.Doctor_Name}</td><td style="color:#0070f3;font-weight:600">${a.Appt_Time}</td><td style="font-size:11px;color:#6b7280;max-width:120px">${(a.Symptoms||'').slice(0,45)}</td><td>${ut(a.Urgency)}</td><td>${sb(a.Status)}</td><td>${a.Status==='booked'?`<button class="btn bg sm" onclick="markDone(${a.ID},this)">Done</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
-  }catch{document.getElementById('today-queue').innerHTML='<div class="alert ae">Cannot reach server. Run: python HASO.py</div>'}
-}
-
-async function loadAnal(){
-  try{
-    const [sp,ur,dc,pr,dy]=await Promise.all([R('/analytics/by-specialty'),R('/analytics/by-urgency'),R('/analytics/top-doctors'),R('/analytics/priority-distribution'),R('/analytics/by-day')]);
-    const mx=a=>Math.max(...a.map(x=>x.count),1);
-    document.getElementById('ch-spec').innerHTML=sp.map(x=>prRow(x.specialty,x.count,mx(sp))).join('')||'<div class="empty">No data</div>';
-    const uc={'Low':'#16a34a','Medium':'#d97706','High':'#dc2626'};
-    document.getElementById('ch-urg').innerHTML=ur.map(x=>prRow(x.urgency,x.count,mx(ur),uc[x.urgency]||'#0070f3')).join('');
-    document.getElementById('ch-doc').innerHTML=dc.map(x=>prRow(x.doctor,x.count,mx(dc),'#7c3aed')).join('')||'<div class="empty">No data</div>';
-    document.getElementById('ch-prio').innerHTML=pr.map(x=>prRow('Score '+x.priority,x.count,mx(pr),x.priority>=7?'#dc2626':x.priority>=4?'#d97706':'#16a34a')).join('');
-    const md=Math.max(...dy.map(x=>x.count),1);
-    document.getElementById('ch-daily').innerHTML=dy.map(x=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:9px;color:#9ca3af">${x.count||''}</div><div style="width:100%;background:#0070f3;border-radius:3px 3px 0 0;height:${Math.max(x.count/md*80,x.count?3:0)}px"></div><div style="font-size:8px;color:#9ca3af;writing-mode:vertical-rl;transform:rotate(180deg)">${x.date.slice(5)}</div></div>`).join('');
-  }catch{}
-}
-
-async function loadAAppts(){
-  const date=document.getElementById('filter-date')?.value,status=document.getElementById('filter-status')?.value;
-  let url='/admin/appointments';const p=[];if(date)p.push('date='+date);if(status)p.push('status='+status);if(p.length)url+='?'+p.join('&');
-  const tb=document.getElementById('a-tbody');tb.innerHTML='<tr><td colspan="11" class="loading">Loading…</td></tr>';
-  try{const rows=await R(url);if(!rows.length){tb.innerHTML='<tr><td colspan="11" class="empty">No appointments.</td></tr>';return}
-    tb.innerHTML=rows.map(a=>`<tr><td style="color:#9ca3af;font-size:10px">#${a.ID}</td><td><b>${a.Patient_Name}</b><br><small style="color:#9ca3af">Age:${a.Patient_Age||'—'}</small></td><td>${a.Patient_Phone}</td><td>${a.Doctor_Name}</td><td style="font-size:11px;color:#6b7280;max-width:110px">${(a.Symptoms||'').slice(0,40)}</td><td>${a.Appt_Date}</td><td style="color:#0070f3;font-weight:600">${a.Appt_Time}</td><td>${ut(a.Urgency)}</td><td><span class="badge ${a.Priority>=7?'br2':a.Priority>=4?'ba2':'bg2'}">${a.Priority}/10</span></td><td>${sb(a.Status)}</td><td style="display:flex;gap:4px">${a.Status==='booked'?`<button class="btn bg sm" onclick="markDone(${a.ID},this)">Done</button>`:''}<button class="btn br sm" onclick="delA(${a.ID},this)">✕</button></td></tr>`).join('');
-  }catch{tb.innerHTML='<tr><td colspan="11" class="alert ae">Failed.</td></tr>'}
-}
-function clearF(){document.getElementById('filter-date').value='';document.getElementById('filter-status').value='';loadAAppts()}
-async function markDone(id,btn){await R('/admin/appointments/'+id,{method:'PUT',body:JSON.stringify({status:'completed'})});btn.closest('tr').querySelectorAll('.badge').forEach((b,_,a)=>{if(b===a[a.length-1])b.outerHTML=sb('completed')});btn.remove()}
-async function delA(id,btn){if(!confirm('Delete?'))return;await R('/admin/appointments/'+id,{method:'DELETE'});btn.closest('tr').remove()}
-
-async function loadADocs(){
-  const tb=document.getElementById('d-tbody');tb.innerHTML='<tr><td colspan="8" class="loading">Loading…</td></tr>';
-  try{const docs=await R('/admin/doctors');
-    tb.innerHTML=docs.map(d=>`<tr><td><b>${d.Name}</b></td><td>${d.Specialization}</td><td style="font-size:12px">${String(d.Start_Time).slice(0,5)}–${String(d.End_Time).slice(0,5)}</td><td>${d.Slot_Duration}min</td><td>${d.Experience||0}yr</td><td>₹${d.Fee||0}</td><td>${sb(d.Status)}</td><td style="display:flex;gap:4px">${d.Status==='available'?`<button class="btn ba sm" onclick="setDoc(${d.ID},'on_leave')">Leave</button>`:''}${d.Status==='on_leave'?`<button class="btn bg sm" onclick="setDoc(${d.ID},'available')">Restore</button>`:''}${d.Status!=='removed'?`<button class="btn br sm" onclick="rmDoc(${d.ID})">Remove</button>`:''}</td></tr>`).join('');
-  }catch{tb.innerHTML='<tr><td colspan="8" class="alert ae">Failed.</td></tr>'}
-}
-async function setDoc(id,s){await R('/admin/doctors/'+id,{method:'PUT',body:JSON.stringify({Status:s})});loadADocs()}
-async function rmDoc(id){if(!confirm('Remove?'))return;await R('/admin/doctors/'+id,{method:'DELETE'});loadADocs()}
-async function addDoc(){
-  const n=document.getElementById('d-name').value.trim();if(!n){alert('Enter name.');return}
-  await R('/admin/doctors',{method:'POST',body:JSON.stringify({name:n,specialization:document.getElementById('d-spec').value,start_time:document.getElementById('d-start').value,end_time:document.getElementById('d-end').value,slot_duration:document.getElementById('d-dur').value,experience:document.getElementById('d-exp').value,fee:document.getElementById('d-fee').value})});
-  document.getElementById('d-name').value='';const m=document.getElementById('d-msg');m.textContent='✓ Added!';setTimeout(()=>m.textContent='',3000);
-}
-
-async function loadAPats(){
-  const tb=document.getElementById('p-tbody');tb.innerHTML='<tr><td colspan="7" class="loading">Loading…</td></tr>';
-  try{const pats=await R('/admin/patients');set('pat-count',pats.length+' patients');
-    tb.innerHTML=pats.map(p=>`<tr><td><b>${p.Name}</b></td><td>${p.Age||'—'}</td><td>${p.Phone}</td><td>${p.Blood_Group||'—'}</td><td style="font-size:11px;color:#6b7280">${(p.Medical_History||'None').slice(0,40)}</td><td>${sb(p.Status||'active')}</td><td><button class="btn bo sm" onclick="viewPat(${p.ID})">View</button></td></tr>`).join('');
-  }catch{tb.innerHTML='<tr><td colspan="7" class="alert ae">Failed.</td></tr>'}
-}
-async function viewPat(id){try{const p=await R('/admin/patients/'+id);alert(`${p.Name} | Age:${p.Age} | Blood:${p.Blood_Group||'—'}\nHistory: ${p.Medical_History||'None'}\nAppointments: ${(p.appointments||[]).length}`);}catch{}}
-
-async function loadUsers(){
-  const tb=document.getElementById('u-tbody');tb.innerHTML='<tr><td colspan="7" class="loading">Loading…</td></tr>';
-  try{const users=await R('/admin/users');
-    tb.innerHTML=users.map(u=>`<tr><td style="color:#9ca3af">${u.ID}</td><td><b>${u.Username}</b></td><td>${u.Name}</td><td>${sb(u.Role)}</td><td>${u.Phone||'—'}</td><td>${sb(u.Status)}</td><td>${u.Status==='active'?`<button class="btn br sm" onclick="setUser(${u.ID},'inactive')">Deactivate</button>`:`<button class="btn bg sm" onclick="setUser(${u.ID},'active')">Activate</button>`}</td></tr>`).join('');
-  }catch{tb.innerHTML='<tr><td colspan="7" class="alert ae">Failed.</td></tr>'}
-}
-async function setUser(id,s){await R('/admin/users/'+id,{method:'PUT',body:JSON.stringify({status:s})});loadUsers()}
-
-// ── Doctor Portal ────────────────────────────────────────
-async function loadDAppts(){
-  const df=document.getElementById('df-date')?.value;
-  const url=df?`/doctor/appointments?date=${df}`:'/doctor/appointments';
-  const tb=document.getElementById('da-tbody');tb.innerHTML='<tr><td colspan="9" class="loading">Loading…</td></tr>';
-  try{const rows=await R(url);
-    const td=rows.filter(a=>s2(a.Appt_Date)===today()&&a.Status==='booked').length;
-    set('d-tot',rows.length);set('d-today',td);set('d-booked',rows.filter(a=>a.Status==='booked').length);
-    if(!rows.length){tb.innerHTML='<tr><td colspan="9" class="empty">No appointments.</td></tr>';return}
-    tb.innerHTML=rows.map(a=>`<tr><td><b>${a.Patient_Name}</b></td><td>${a.Patient_Phone}</td><td style="font-size:11px;color:#6b7280;max-width:110px">${(a.Symptoms||'').slice(0,45)}</td><td>${a.Appt_Date}</td><td style="color:#0070f3;font-weight:600">${a.Appt_Time}</td><td>${ut(a.Urgency)}</td><td><span class="badge ${a.Priority>=7?'br2':a.Priority>=4?'ba2':'bg2'}">${a.Priority}/10</span></td><td>${sb(a.Status)}</td><td>${a.Status==='booked'?`<button class="btn bg sm" onclick="dMarkDone(${a.ID},this)">Done</button>`:''}</td></tr>`).join('');
-  }catch{tb.innerHTML='<tr><td colspan="9" class="alert ae">Failed.</td></tr>'}
-}
-async function dMarkDone(id,btn){await R('/admin/appointments/'+id,{method:'PUT',body:JSON.stringify({status:'completed'})});btn.closest('tr').querySelectorAll('.badge').forEach((b,_,a)=>{if(b===a[a.length-1])b.outerHTML=sb('completed')});btn.remove()}
-
-async function loadDPats(){
-  const tb=document.getElementById('dp-tbody');tb.innerHTML='<tr><td colspan="6" class="loading">Loading…</td></tr>';
-  try{const rows=await R('/doctor/appointments');if(!rows.length){tb.innerHTML='<tr><td colspan="6" class="empty">No patients.</td></tr>';return}
-    tb.innerHTML=rows.map(a=>`<tr><td><b>${a.Patient_Name}</b></td><td>${a.Patient_Phone}</td><td style="font-size:11px;color:#6b7280">${(a.Symptoms||'').slice(0,50)}</td><td>${a.Appt_Date}</td><td>${ut(a.Urgency)}</td><td>${sb(a.Status)}</td></tr>`).join('');
-  }catch{tb.innerHTML='<tr><td colspan="6" class="alert ae">Failed.</td></tr>'}
-}
-
-async function loadDProf(){
-  try{const d=await R('/doctor/profile');document.getElementById('doc-profile-card').innerHTML=`<h3>👨‍⚕️ ${d.Name}</h3><p style="color:#6b7280;margin:4px 0 12px">${d.Specialization}</p><div style="font-size:13px;line-height:2.1"><div>🕐 ${String(d.Start_Time).slice(0,5)}–${String(d.End_Time).slice(0,5)}</div><div>⏱ Slot: ${d.Slot_Duration}min</div><div>🏅 ${d.Experience||0} years exp</div><div>💰 Fee: ₹${d.Fee||0}</div><div>👥 Patients: ${d.total_patients||0}</div></div>`;}
-  catch{document.getElementById('doc-profile-card').innerHTML='<div class="empty">Profile not found.</div>'}
-}
-
-// ── Patient Portal ───────────────────────────────────────
-async function loadPAppts(){
-  const tb=document.getElementById('pa-tbody');tb.innerHTML='<tr><td colspan="8" class="loading">Loading…</td></tr>';
-  try{const rows=await R('/patient/appointments');if(!rows.length){tb.innerHTML='<tr><td colspan="8" class="empty">No appointments.</td></tr>';return}
-    tb.innerHTML=rows.map(a=>`<tr><td><b>${a.Doctor_Name}</b></td><td>${a.Specialty}</td><td>${a.Appt_Date}</td><td style="color:#0070f3;font-weight:600">${a.Appt_Time}</td><td>${ut(a.Urgency)}</td><td><span class="badge ${a.Priority>=7?'br2':a.Priority>=4?'ba2':'bg2'}">${a.Priority}/10</span></td><td>${sb(a.Status)}</td><td>${a.Status==='booked'?`<button class="btn br sm" onclick="pCancel(${a.ID},this)">Cancel</button>`:''}</td></tr>`).join('');
-  }catch{tb.innerHTML='<tr><td colspan="8" class="alert ae">Failed.</td></tr>'}
-}
-async function pCancel(id,btn){if(!confirm('Cancel?'))return;await R('/appointments/'+id+'/cancel',{method:'POST'});btn.closest('tr').querySelectorAll('.badge').forEach((b,_,a)=>{if(b===a[a.length-1])b.outerHTML=sb('cancelled')});btn.remove()}
-
-async function initPBook(){
-  document.getElementById('pb-date').min=document.getElementById('pb-date').value=today();
-  try{const s=await R('/specialties');const sel=document.getElementById('pb-spec');sel.innerHTML='<option value="">All</option>';s.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;sel.appendChild(o)});}catch{}
-  loadPDocs();
-}
-
-async function loadPDocs(){
-  const sp=document.getElementById('pb-spec').value;
-  let pdocs=[];try{pdocs=await R('/doctors?status=available'+(sp?'&specialty='+encodeURIComponent(sp):''));}catch{}
-  renderDocs('pb-doc-grid',pdocs,id=>{PBDOC=pdocs.find(d=>d.ID==id);document.querySelectorAll('#pb-doc-grid .dc').forEach(c=>c.classList.remove('sel'));document.getElementById('dc-'+id).classList.add('sel');});
-}
-
-async function patBook(){
-  if(!PBDOC){alert('Choose a doctor.');return}
-  const syms=document.getElementById('pb-syms').value.trim(),date=document.getElementById('pb-date').value||today();
-  if(!syms){alert('Describe symptoms.');return}
-  try{const prof=await R('/patient/profile').catch(()=>null);
-    const r=await R('/book',{method:'POST',body:JSON.stringify({patient_name:prof?.Name||USER?.name||'',patient_age:prof?.Age||0,patient_phone:prof?.Phone||'',symptoms:syms,doctor_id:PBDOC.ID,appt_date:date})});
-    document.getElementById('pb-result').innerHTML=`<div class="ok-box"><div class="tick">✅</div><h3>Booked!</h3><p><b>${r.doctor}</b> — ${r.specialty}</p><p>📅 ${r.date} &nbsp; 🕐 <b>${r.time}</b></p><p>Urgency: ${ut(r.urgency=='High'?3:r.urgency=='Medium'?2:1)} Priority: <b>${r.priority}/10</b></p></div>`;
-  }catch(e){document.getElementById('pb-result').innerHTML=`<div class="alert ae">${e.error||'Booking failed.'}</div>`}
-}
-
-async function loadPProf(){
-  try{const p=await R('/patient/profile');
-    document.getElementById('pat-profile-data').innerHTML=`<div style="font-size:13px;line-height:2.1"><div><b>Name:</b> ${p.Name}</div><div><b>Age:</b> ${p.Age||'—'}</div><div><b>Phone:</b> ${p.Phone}</div><div><b>Email:</b> ${p.Email||'—'}</div><div><b>Blood:</b> ${p.Blood_Group||'—'}</div><div><b>History:</b> ${p.Medical_History||'None'}</div></div>`;
-    document.getElementById('up-phone').value=p.Phone||'';document.getElementById('up-blood').value=p.Blood_Group||'';document.getElementById('up-hist').value=p.Medical_History||'';
-  }catch{document.getElementById('pat-profile-data').innerHTML='<div class="empty">Profile not found.</div>'}
-}
-async function updatePProfile(){
-  try{await R('/patient/profile',{method:'PUT',body:JSON.stringify({Phone:document.getElementById('up-phone').value,Blood_Group:document.getElementById('up-blood').value,Medical_History:document.getElementById('up-hist').value})});
-    const m=document.getElementById('up-msg');m.textContent='✓ Saved!';setTimeout(()=>m.textContent='',3000);loadPProf();
-  }catch(e){alert(e.error||'Failed')}
-}
-
-// ── Boot ─────────────────────────────────────────────────
-window.onload=()=>{initPublic();if(TOKEN&&USER)route()};
+// ID shorthands — must come after DOM is parsed
+document.addEventListener('DOMContentLoaded',()=>{
+  window.pn_=document.getElementById('pn');
+  window.as_=document.getElementById('as');
+  window.dn_=document.getElementById('dn');
+  window.ut_=document.getElementById('ut');
+  window.fd=document.getElementById('fd');
+  window.fs=document.getElementById('fs');
+});
+window.onload=()=>{if(T&&U){if(U.role==='admin'){pg('admin');lov()}else if(U.role==='doctor'){pg('doctor');lda()}else{pg('patient');lpa()}}else ini()};
 </script>
 </body>
 </html>
